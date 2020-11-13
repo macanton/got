@@ -16,7 +16,7 @@ Example of created branches:
 ## Tested with
 - Mac OS, 10.15.6
 - Go 1.15
-- JIRA_API_ENDPOINT: https://trailsystems.atlassian.net/rest/api/3
+- Jira api version 3
 
 ## Installation
 ### From source code
