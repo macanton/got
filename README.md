@@ -14,8 +14,9 @@ Example of created branches:
 - Branch format is `DD-XXXX/ZZZZZ`, where `ZZZZZ` is an issue summary in underscore case
 
 ## Tested with
-- Mac OS
+- Mac OS, 10.15.6
 - Go 1.15
+- JIRA_API_ENDPOINT: https://trailsystems.atlassian.net/rest/api/3
 
 ## Installation
 ### From source code
