@@ -16,7 +16,7 @@ Example of created branches:
 ## Tested with
 - Mac OS, 10.15.6
 - Go 1.15
-- Jira api version 3
+- Jira ckoud api version 3 (https://YOUR_COMPANY_JIRA_DOMAIN.atlassian.net/rest/api/3)
 
 ## Installation
 ### From source code
