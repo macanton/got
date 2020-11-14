@@ -2,12 +2,18 @@
 **got** is the CLI tool for linking your branches and Jira issues.
 It helps to reduce the amount of time spent on creating/managing git branches that should be linked to Jira issues
 
-## Available commands
+## Available flags
+`got --help` - list all comands with description
+
+### List of all supported flags
 - `got -b XXXX` - creates new git branch with the name generated from Jira issue
 - `got -cj` - creates a new Jira issue and if it succeeds creates new git branch for it
 
 Example of created branches:
-`PC-1234/jira_isue_summary`
+`PC-1234/jira_issue_summary`, where:
+-  `PC` - project code
+- `1234` - code of the Jira issue
+- `jira_issue_summary`- Jira issue summary in underscore case
 
 ## Assumptions
 - Your Jira issues have a key in the format of `DD-XXXX`, where `DD` is a project code and `XXXX` is an issue number
