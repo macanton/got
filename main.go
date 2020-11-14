@@ -19,6 +19,8 @@ func main() {
 		checkoutJiraBranch()
 	case config.CheckBranchForNewJiraIssue:
 		createJiraTicketAndCheckBranch()
+	case config.ModifyBranch:
+		modifyBranch()
 	}
 }
 
@@ -46,7 +48,7 @@ func checkoutJiraBranch() {
 		return
 	}
 
-	branchName, err = git.GenerateBranchName(issue.Key, issue.Fields.Summary)
+	branchName, err = git.GenerateBranchName([]string{issue.Key}, issue.Fields.Summary)
 	if err != nil {
 		printErrorToConsole(err)
 		return
@@ -69,13 +71,50 @@ func createJiraTicketAndCheckBranch() {
 		return
 	}
 
-	branchName, err := git.GenerateBranchName(issueKey, config.Options.Summary)
+	branchName, err := git.GenerateBranchName([]string{issueKey}, config.Options.Summary)
 	if err != nil {
 		printErrorToConsole(err)
 		return
 	}
 
 	output, err := git.CheckoutNewBranch(branchName)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	printInfoToConsole(string(output))
+}
+
+func modifyBranch() {
+	currentBranchName, err := git.GetCurrentBranch()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKey := issueKeys[0]
+
+	summary, err := jira.UpdateIssueSummary(issueKey, config.Options.Summary)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+	printInfoToConsole(fmt.Sprintf("Jira issue summary updated to '%s'", config.Options.Summary))
+
+	newBranchName, err := git.GenerateBranchName(issueKeys, summary)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	output, err := git.UpdateBranchName(newBranchName)
 	if err != nil {
 		printErrorToConsole(err)
 		return
