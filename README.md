@@ -6,7 +6,7 @@ It helps to reduce the amount of time spent on creating/managing git branches th
 `got --help` - list all comands with description
 
 ### List of all supported flags
-- `got -b XXXX` - creates new git branch with the name generated from Jira issue
+- `got -b XXXX` - creates new git branch with the name generated from Jira issue. If the branch already exists (locally or remotely) then it will switch to it.
 - `got -cj` - creates a new Jira issue and if it succeeds creates new git branch for it
 
 Example of created branches:
