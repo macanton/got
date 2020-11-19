@@ -106,7 +106,7 @@ func modifyBranch() {
 		printErrorToConsole(err)
 		return
 	}
-	printInfoToConsole(fmt.Sprintf("Jira issue summary updated to '%s'", config.Options.Summary))
+	printInfoToConsole(fmt.Sprintf("Jira issue summary updated to '%s'", summary))
 
 	newBranchName, err := git.GenerateBranchName(issueKeys, summary)
 	if err != nil {
