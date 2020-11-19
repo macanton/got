@@ -87,7 +87,7 @@ func createJiraTicketAndCheckBranch() {
 }
 
 func modifyBranch() {
-	currentBranchName, err := git.GetCurrentBranch()
+	currentBranchName, err := git.GetCurrentBranchName()
 	if err != nil {
 		printErrorToConsole(err)
 		return

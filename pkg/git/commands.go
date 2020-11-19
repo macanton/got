@@ -83,8 +83,8 @@ func UpdateBranchName(branchName string) ([]byte, error) {
 
 }
 
-// GetCurrentBranch returns current git branch
-func GetCurrentBranch() (string, error) {
+// GetCurrentBranchName returns current git branch
+func GetCurrentBranchName() (string, error) {
 	cmd := exec.Command("git", "branch", "--show-current")
 	output, err := cmd.Output()
 	if err != nil {
