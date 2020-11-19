@@ -14,7 +14,7 @@ func FindBranchBySubstring(substring string) (string, error) {
 	pipe, err := listAllBranchesCmd.StdoutPipe()
 	defer pipe.Close()
 	if err != nil {
-		formattedError := fmt.Errorf(fmt.Sprintf("Failed to create pipe for grep %s, error: %s", substring, err.Error()))
+		formattedError := fmt.Errorf(fmt.Sprintf("Failed to create pipe for grep '%s'. Error: '%s'", substring, err.Error()))
 		return "", formattedError
 	}
 
@@ -22,13 +22,13 @@ func FindBranchBySubstring(substring string) (string, error) {
 
 	err = listAllBranchesCmd.Start()
 	if err != nil {
-		formattedError := fmt.Errorf(fmt.Sprintf("Failed to start grep command for %s, error: %s", substring, err.Error()))
+		formattedError := fmt.Errorf(fmt.Sprintf("Failed to start grep command for '%s'. Error: '%s'", substring, err.Error()))
 		return "", formattedError
 	}
 
 	output, _ := grepCmd.Output()
 	if err != nil {
-		formattedError := fmt.Errorf(fmt.Sprintf("Failed to get result from grep for %s, error: %s", substring, err.Error()))
+		formattedError := fmt.Errorf(fmt.Sprintf("Failed to get result from grep for '%s'. Error: '%s'", substring, err.Error()))
 		return "", formattedError
 	}
 
@@ -49,7 +49,7 @@ func CheckoutBranch(branchName string) (string, error) {
 	cmd := exec.Command("git", "checkout", branchName)
 	output, err := cmd.Output()
 	if err != nil {
-		formattedError := fmt.Errorf(fmt.Sprintf("Failed to switch to branch '%s', error: %s", branchName, err.Error()))
+		formattedError := fmt.Errorf(fmt.Sprintf("Failed to switch to branch '%s'. Error: '%s'", branchName, err.Error()))
 		return string(output), formattedError
 	}
 
@@ -62,9 +62,36 @@ func CheckoutNewBranch(branchName string) ([]byte, error) {
 	output, err := cmd.Output()
 	if err != nil {
 		return output, fmt.Errorf(
-			fmt.Sprintf("Failed to create a new branch %s, error: %s", branchName, err.Error()),
+			fmt.Sprintf("Failed to create a new branch '%s'. Error: '%s'", branchName, err.Error()),
 		)
 	}
 
 	return output, nil
+}
+
+// UpdateBranchName updates current branch name
+func UpdateBranchName(branchName string) ([]byte, error) {
+	cmd := exec.Command("git", "branch", "-m", branchName)
+	output, err := cmd.Output()
+	if err != nil {
+		return output, fmt.Errorf(
+			fmt.Sprintf("Failed to update branch name to '%s'. Error: '%s'", branchName, err.Error()),
+		)
+	}
+
+	return output, nil
+
+}
+
+// GetCurrentBranchName returns current git branch
+func GetCurrentBranchName() (string, error) {
+	cmd := exec.Command("git", "branch", "--show-current")
+	output, err := cmd.Output()
+	if err != nil {
+		return string(output), fmt.Errorf(
+			fmt.Sprintf("Failed get current git branch with. Error: '%s'", err.Error()),
+		)
+	}
+
+	return strings.TrimSuffix(string(output), "\n"), nil
 }

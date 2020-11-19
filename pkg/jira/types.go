@@ -16,33 +16,48 @@ type Issue struct {
 	} `json:"renderedFields"`
 }
 
-// IssueForm is a struct for Jira Issue form values
-type IssueForm struct {
-	Fields IssueFormFields `json:"fields"`
+// CreateIssueData is a struct for Jira Issue form values
+type CreateIssueData struct {
+	Fields CreateIssueDataFields `json:"fields"`
 }
 
-// IssueFormFields is a type for IssueForm nested structure
-type IssueFormFields struct {
-	Project   IssueFormProject   `json:"project"`
-	Summary   string             `json:"summary"`
-	IssueType IssueFormIssueType `json:"issuetype"`
+// CreateIssueDataFields is a type for IssueForm nested structure
+type CreateIssueDataFields struct {
+	Project   CreateIssueDataProject   `json:"project"`
+	Summary   string                   `json:"summary"`
+	IssueType CreateIssueDataIssueType `json:"issuetype"`
 }
 
-// IssueFormProject is a type for IssueForm nested structure
-type IssueFormProject struct {
+// CreateIssueDataProject is a type for IssueForm nested structure
+type CreateIssueDataProject struct {
 	Key string `json:"key"`
 }
 
-// IssueFormIssueType is a type for IssueForm nested structure
-type IssueFormIssueType struct {
+// CreateIssueDataIssueType is a type for IssueForm nested structure
+type CreateIssueDataIssueType struct {
 	Name string `json:"name"`
 }
 
-// IssueCreationResponse type for response on Jira issue creation request
-type IssueCreationResponse struct {
+// CreateIssueResponse type for response on Jira issue creation request
+type CreateIssueResponse struct {
 	ID   string `json:"id"`
 	Key  string `json:"key"`
 	Self string `json:"self"`
+}
+
+// UpdateIssueData is a type for issue update request data
+type UpdateIssueData struct {
+	Update UpdateIssueDataFields `json:"update"`
+}
+
+// UpdateIssueDataFields is a type for issue update data fields
+type UpdateIssueDataFields struct {
+	Summary []UpdateIssueSummaryFieldOperationData `json:"summary"`
+}
+
+// UpdateIssueSummaryFieldOperationData is a type for issue summary set operation
+type UpdateIssueSummaryFieldOperationData struct {
+	Set string `json:"set"`
 }
 
 // GetStrippedDescription returns issues descriptions without html tags

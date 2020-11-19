@@ -15,15 +15,17 @@ type OperationType string
 // CheckoutBranch is a holder of operation name
 const (
 	CheckoutBranch             OperationType = "CheckoutBranch"
+	ModifyBranch               OperationType = "ModifyBranch"
 	CheckBranchForNewJiraIssue OperationType = "CheckBranchForNewJiraIssue"
 )
 
 // OptionsType is a type for stored app configuration
 type OptionsType struct {
-	IssueCode int
-	Summary   string
-	Operation OperationType
-	Jira      struct {
+	IssueCode            int
+	Summary              string
+	Operation            OperationType
+	IssueBranchSeparator string
+	Jira                 struct {
 		ProjectCode string
 		APIEndPoint string
 		Email       string
@@ -32,7 +34,9 @@ type OptionsType struct {
 }
 
 // Options variable stores app configuration settings
-var Options OptionsType
+var Options OptionsType = OptionsType{
+	IssueBranchSeparator: "/",
+}
 
 // InitAndRequestAdditionalData function initializes global configuration of the application
 func InitAndRequestAdditionalData() error {
@@ -42,6 +46,7 @@ func InitAndRequestAdditionalData() error {
 	}
 
 	ticketID := flag.Int("b", 0, "Jira ticket number key for new branch")
+	modifyBranch := flag.Bool("m", false, "Update branch name with Jira issue summary")
 	createIssue := flag.Bool("cj", false, "Create a new Jira issue and switch to the new branch")
 	flag.Parse()
 
@@ -57,29 +62,46 @@ func InitAndRequestAdditionalData() error {
 
 	if *createIssue {
 		Options.Operation = CheckBranchForNewJiraIssue
-		fmt.Print("Enter issue summary: ")
-
-		reader := bufio.NewReader(os.Stdin)
-		summary, err := reader.ReadString('\n')
-		if err != nil {
-			return fmt.Errorf("Failed to read string from buffer reader: %s", err.Error())
-		}
-
-		summary = strings.TrimSpace(summary)
-		if len(summary) == 0 {
-			return errors.New("Summary cannot be empty string")
-		}
-
-		Options.Summary = summary
-		return nil
+		err := readJiraIssueSummary()
+		return err
 	}
 
-	return errors.New("Invalid flags supplied. Cannot determine target operation")
+	if *modifyBranch {
+		Options.Operation = ModifyBranch
+		err := readJiraIssueSummary()
+		return err
+	}
+
+	return errors.New("Invalid flags supplied. Cannot determine target operation, use --help")
 }
 
 // GetIssueKey returns a key of the Jira issue that contains project code and issue code
 func GetIssueKey() string {
 	return fmt.Sprintf("%s-%d", Options.Jira.ProjectCode, Options.IssueCode)
+}
+
+// GetIssueKeyPrefix returns Jira issue key prefix
+func GetIssueKeyPrefix() string {
+	return fmt.Sprintf("%s-", Options.Jira.ProjectCode)
+}
+
+func readJiraIssueSummary() error {
+	fmt.Print("Enter Jira issue summary: ")
+
+	reader := bufio.NewReader(os.Stdin)
+	summary, err := reader.ReadString('\n')
+	if err != nil {
+		return fmt.Errorf("Failed to read string from buffer reader: %s", err.Error())
+	}
+
+	summary = strings.TrimSpace(summary)
+	if len(summary) == 0 {
+		return errors.New("Summary cannot be an empty string")
+	}
+
+	Options.Summary = summary
+
+	return nil
 }
 
 func readConfigVariables() error {
