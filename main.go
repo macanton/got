@@ -21,11 +21,13 @@ func main() {
 		createJiraTicketAndCheckBranch()
 	case config.ModifyBranch:
 		modifyBranch()
+	case config.PrintInfo:
+		printInfo()
 	}
 }
 
 func checkoutJiraBranch() {
-	issue, err := jira.GetIssue()
+	issue, err := jira.GetIssue(config.GetIssueKey())
 	if err != nil {
 		printErrorToConsole(err)
 		return
@@ -121,6 +123,30 @@ func modifyBranch() {
 	}
 
 	printInfoToConsole(string(output))
+}
+
+func printInfo() {
+	currentBranchName, err := git.GetCurrentBranchName()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
+	printInfoToConsole(issueKeys[0])
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	for i := 0; i < len(issueKeys); i++ {
+		issue, err := jira.GetIssue(issueKeys[i])
+		if err != nil {
+			printErrorToConsole(err)
+			continue
+		}
+		printJiraIssueData(issue)
+	}
 }
 
 func printInfoToConsole(data string) {
