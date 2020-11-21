@@ -35,7 +35,7 @@ func checkoutJiraBranch() {
 		return
 	}
 
-	branchName, err := git.FindBranchBySubstring(config.GetIssueKey())
+	branchName, err := git.FindBranchBySubstring(config.GetIssueKey() + config.Options.IssueBranchSeparator)
 	if err != nil {
 		printErrorToConsole(err)
 		return
