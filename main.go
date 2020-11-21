@@ -133,7 +133,6 @@ func printInfo() {
 	}
 
 	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
-	printInfoToConsole(issueKeys[0])
 	if err != nil {
 		printErrorToConsole(err)
 		return
