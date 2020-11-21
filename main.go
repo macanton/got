@@ -23,6 +23,8 @@ func main() {
 		modifyBranch()
 	case config.PrintInfo:
 		printInfo()
+	case config.AddJiraIssueToCurrentBranch:
+		addJiraIssueToCurrentBranch()
 	}
 }
 
@@ -116,7 +118,41 @@ func modifyBranch() {
 		return
 	}
 
-	output, err := git.UpdateBranchName(newBranchName)
+	output, err := git.UpdateCurrentBranchName(newBranchName)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	printInfoToConsole(string(output))
+}
+
+func addJiraIssueToCurrentBranch() {
+	currentBranchName, err := git.GetCurrentBranchName()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKey := config.GetIssueKey()
+	if stringInSlice(issueKey, issueKeys) {
+		printInfoToConsole(fmt.Sprintf("Jira issue %s already linked to the current branch", issueKey))
+		return
+	}
+
+	updatedBranchName, err := git.AddIssueKeysToBranchName([]string{issueKey}, currentBranchName)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	output, err := git.UpdateCurrentBranchName(updatedBranchName)
 	if err != nil {
 		printErrorToConsole(err)
 		return
@@ -164,4 +200,13 @@ func printJiraIssueData(issue jira.Issue) {
 	fmt.Println("Description:")
 	fmt.Println(issue.GetStrippedDescription())
 	fmt.Println("--------------------")
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }

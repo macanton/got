@@ -27,6 +27,13 @@ func GenerateBranchName(issueKeys []string, summary string) (string, error) {
 	return strings.Join(branchNameSubstrings, config.Options.IssueBranchSeparator), nil
 }
 
+// AddIssueKeysToBranchName add issue keys to branch name
+func AddIssueKeysToBranchName(issueKeys []string, branchName string) (string, error) {
+	branchNameSubstrings := append(issueKeys, branchName)
+
+	return strings.Join(branchNameSubstrings, config.Options.IssueBranchSeparator), nil
+}
+
 // GetIssueKeysFromBranchName returns list of Jira issue keys accosiated with current branch
 func GetIssueKeysFromBranchName(branchName string) ([]string, error) {
 	substrings := strings.Split(branchName, config.Options.IssueBranchSeparator)
