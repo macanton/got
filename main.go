@@ -23,8 +23,8 @@ func main() {
 		modifyBranch()
 	case config.PrintInfo:
 		printInfo()
-	case config.AddJiraIssueToCurrentBranch:
-		addJiraIssueToCurrentBranch()
+	case config.LinkJiraIssueToCurrentBranch:
+		linkJiraIssueToCurrentBranch()
 	}
 }
 
@@ -97,9 +97,11 @@ func modifyBranch() {
 		return
 	}
 
-	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
-	if err != nil {
-		printErrorToConsole(err)
+	issueKeys := git.GetIssueKeysFromBranchName(currentBranchName)
+	if len(issueKeys) == 0 {
+		printErrorToConsole(fmt.Errorf(
+			"Branch name '%s' does not contain issue keys with prefix '%s'", currentBranchName, config.GetIssueKeyPrefix(),
+		))
 		return
 	}
 
@@ -127,26 +129,21 @@ func modifyBranch() {
 	printInfoToConsole(string(output))
 }
 
-func addJiraIssueToCurrentBranch() {
+func linkJiraIssueToCurrentBranch() {
 	currentBranchName, err := git.GetCurrentBranchName()
 	if err != nil {
 		printErrorToConsole(err)
 		return
 	}
 
-	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
-	if err != nil {
-		printErrorToConsole(err)
-		return
-	}
-
+	issueKeys := git.GetIssueKeysFromBranchName(currentBranchName)
 	issueKey := config.GetIssueKey()
 	if stringInSlice(issueKey, issueKeys) {
 		printInfoToConsole(fmt.Sprintf("Jira issue %s already linked to the current branch", issueKey))
 		return
 	}
 
-	updatedBranchName, err := git.AddIssueKeysToBranchName([]string{issueKey}, currentBranchName)
+	updatedBranchName, err := git.PrependIssueKeysToBranchName([]string{issueKey}, currentBranchName)
 	if err != nil {
 		printErrorToConsole(err)
 		return
@@ -168,9 +165,11 @@ func printInfo() {
 		return
 	}
 
-	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
-	if err != nil {
-		printErrorToConsole(err)
+	issueKeys := git.GetIssueKeysFromBranchName(currentBranchName)
+	if len(issueKeys) == 0 {
+		printErrorToConsole(fmt.Errorf(
+			"Branch name '%s' does not contain issue keys with prefix '%s'", currentBranchName, config.GetIssueKeyPrefix(),
+		))
 		return
 	}
 

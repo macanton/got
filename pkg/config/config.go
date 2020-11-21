@@ -14,11 +14,11 @@ type OperationType string
 
 // CheckoutBranch is a holder of operation name
 const (
-	CheckoutBranch              OperationType = "CheckoutBranch"
-	ModifyBranch                OperationType = "ModifyBranch"
-	CheckBranchForNewJiraIssue  OperationType = "CheckBranchForNewJiraIssue"
-	PrintInfo                   OperationType = "PrintInfo"
-	AddJiraIssueToCurrentBranch OperationType = "AddJiraIssueToBranch"
+	CheckoutBranch               OperationType = "CheckoutBranch"
+	ModifyBranch                 OperationType = "ModifyBranch"
+	CheckBranchForNewJiraIssue   OperationType = "CheckBranchForNewJiraIssue"
+	PrintInfo                    OperationType = "PrintInfo"
+	LinkJiraIssueToCurrentBranch OperationType = "LinkJiraIssueToBranch"
 )
 
 // OptionsType is a type for stored app configuration
@@ -51,7 +51,7 @@ func InitAndRequestAdditionalData() error {
 	modifyBranch := flag.Bool("m", false, "Update branch name with Jira issue summary")
 	createIssue := flag.Bool("cj", false, "Create a new Jira issue and switch to the new branch")
 	printIssuesInfo := flag.Bool("info", false, "Print current branch Jira issues information")
-	issueCodeForLinking := flag.Int("ab", 0, "Links Jira Issue to current branch")
+	issueCodeForLinking := flag.Int("lj", 0, "Links Jira Issue to current branch")
 	flag.Parse()
 
 	if *ticketID < 0 {
@@ -65,7 +65,7 @@ func InitAndRequestAdditionalData() error {
 	}
 
 	if *issueCodeForLinking > 0 {
-		Options.Operation = AddJiraIssueToCurrentBranch
+		Options.Operation = LinkJiraIssueToCurrentBranch
 		Options.IssueCode = *issueCodeForLinking
 		return nil
 	}
