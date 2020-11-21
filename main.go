@@ -102,6 +102,12 @@ func modifyBranch() {
 		printErrorToConsole(err)
 		return
 	}
+	if len(issueKeys) == 0 {
+		printErrorToConsole(fmt.Errorf(
+			"Branch name '%s' does not contain issue keys with prefix '%s'", currentBranchName, config.GetIssueKeyPrefix(),
+		))
+		return
+	}
 
 	issueKey := issueKeys[0]
 
@@ -171,6 +177,12 @@ func printInfo() {
 	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
 	if err != nil {
 		printErrorToConsole(err)
+		return
+	}
+	if len(issueKeys) == 0 {
+		printErrorToConsole(fmt.Errorf(
+			"Branch name '%s' does not contain issue keys with prefix '%s'", currentBranchName, config.GetIssueKeyPrefix(),
+		))
 		return
 	}
 

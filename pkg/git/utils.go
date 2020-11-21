@@ -48,14 +48,7 @@ func GetIssueKeysFromBranchName(branchName string) ([]string, error) {
 		return strings.HasPrefix(substring, issueKeyPrefix)
 	}
 
-	issueKeys := filter(substrings, filterFunc)
-	if len(issueKeys) == 0 {
-		return nil, fmt.Errorf(
-			"Branch name '%s' does not contain issue keys with prefix '%s'", branchName, issueKeyPrefix,
-		)
-	}
-
-	return issueKeys, nil
+	return filter(substrings, filterFunc), nil
 }
 
 func filter(stringsArr []string, filterFunc func(string) bool) (filteredArr []string) {
