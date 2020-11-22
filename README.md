@@ -8,6 +8,7 @@ It helps to reduce the amount of time spent on creating/managing git branches th
 ### List of all supported flags
 - `got -b XXXX` - creates new git branch with the name generated from Jira issue. If the branch already exists (locally or remotely) then it will switch to it.
 - `got -lj XXXX` - links Jira issue to the current branch if not linked already
+- `got -uj XXXX` - unlinks Jira issue from the current branch
 - `got -cj` - creates a new Jira issue and if it succeeds creates new git branch for it
 - `got -m` - modifies Jira issue summary and current branch name
 - `got -info` - prints current branch Jira issues info

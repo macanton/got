@@ -14,11 +14,12 @@ type OperationType string
 
 // CheckoutBranch is a holder of operation name
 const (
-	CheckoutBranch               OperationType = "CheckoutBranch"
-	ModifyBranch                 OperationType = "ModifyBranch"
-	CheckBranchForNewJiraIssue   OperationType = "CheckBranchForNewJiraIssue"
-	PrintInfo                    OperationType = "PrintInfo"
-	LinkJiraIssueToCurrentBranch OperationType = "LinkJiraIssueToBranch"
+	CheckoutBranch                   OperationType = "CheckoutBranch"
+	ModifyBranch                     OperationType = "ModifyBranch"
+	CheckBranchForNewJiraIssue       OperationType = "CheckBranchForNewJiraIssue"
+	PrintInfo                        OperationType = "PrintInfo"
+	LinkJiraIssueToCurrentBranch     OperationType = "LinkJiraIssueToCurrentBranch"
+	UnlinkJiraIssueFromCurrentBranch OperationType = "UnlinkJiraIssueFromCurrentBranch"
 )
 
 // OptionsType is a type for stored app configuration
@@ -52,6 +53,7 @@ func InitAndRequestAdditionalData() error {
 	createIssue := flag.Bool("cj", false, "Create a new Jira issue and switch to the new branch")
 	printIssuesInfo := flag.Bool("info", false, "Print current branch Jira issues information")
 	issueCodeForLinking := flag.Int("lj", 0, "Links Jira Issue to current branch")
+	issueCodeForUnlinking := flag.Int("uj", 0, "Unlinks Jira Issue from the current branch")
 	flag.Parse()
 
 	if *ticketID < 0 {
@@ -67,6 +69,12 @@ func InitAndRequestAdditionalData() error {
 	if *issueCodeForLinking > 0 {
 		Options.Operation = LinkJiraIssueToCurrentBranch
 		Options.IssueCode = *issueCodeForLinking
+		return nil
+	}
+
+	if *issueCodeForUnlinking > 0 {
+		Options.Operation = UnlinkJiraIssueFromCurrentBranch
+		Options.IssueCode = *issueCodeForUnlinking
 		return nil
 	}
 

@@ -25,6 +25,8 @@ func main() {
 		printInfo()
 	case config.LinkJiraIssueToCurrentBranch:
 		linkJiraIssueToCurrentBranch()
+	case config.UnlinkJiraIssueFromCurrentBranch:
+		unlinkJiraIssueFromCurrentBranch()
 	}
 }
 
@@ -155,6 +157,26 @@ func linkJiraIssueToCurrentBranch() {
 		return
 	}
 
+	printInfoToConsole(string(output))
+}
+
+func unlinkJiraIssueFromCurrentBranch() {
+	currentBranchName, err := git.GetCurrentBranchName()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKey := config.GetIssueKey()
+	updatedBranchName := git.RemoveIssueKeysFromBranchName([]string{issueKey}, currentBranchName)
+
+	output, err := git.UpdateCurrentBranchName(updatedBranchName)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	printInfoToConsole(fmt.Sprintf("Jira issue '%s' was unlinked from the current branch", issueKey))
 	printInfoToConsole(string(output))
 }
 

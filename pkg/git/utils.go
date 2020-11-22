@@ -33,6 +33,16 @@ func PrependIssueKeysToBranchName(issueKeys []string, branchName string) (string
 	return strings.Join(branchNameSubstrings, config.Options.IssueBranchSeparator), nil
 }
 
+// RemoveIssueKeysFromBranchName remove issue keys from branch name
+func RemoveIssueKeysFromBranchName(issueKeys []string, branchName string) string {
+	substrings := strings.Split(branchName, config.Options.IssueBranchSeparator)
+	for _, issueKey := range issueKeys {
+		substrings = removeElementFromArray(substrings, issueKey)
+	}
+
+	return strings.Join(substrings, config.Options.IssueBranchSeparator)
+}
+
 // GetIssueKeysFromBranchName returns list of Jira issue keys accosiated with current branch
 func GetIssueKeysFromBranchName(branchName string) []string {
 	substrings := strings.Split(branchName, config.Options.IssueBranchSeparator)
@@ -52,4 +62,22 @@ func filter(stringsArr []string, filterFunc func(string) bool) (filteredArr []st
 		}
 	}
 	return
+}
+
+func removeElementFromArray(stringsArr []string, stringToRemove string) (filteredArr []string) {
+	i := findElementInArray(stringsArr, stringToRemove)
+	if i == -1 {
+		return stringsArr
+	}
+
+	return append(stringsArr[:i], stringsArr[i+1:]...)
+}
+
+func findElementInArray(arr []string, stringToSearch string) int {
+	for i, element := range arr {
+		if stringToSearch == element {
+			return i
+		}
+	}
+	return -1
 }
