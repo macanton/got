@@ -23,6 +23,8 @@ func main() {
 		modifyBranch()
 	case config.PrintInfo:
 		printInfo()
+	case config.LinkJiraIssueToCurrentBranch:
+		linkJiraIssueToCurrentBranch()
 	}
 }
 
@@ -33,7 +35,7 @@ func checkoutJiraBranch() {
 		return
 	}
 
-	branchName, err := git.FindBranchBySubstring(config.GetIssueKey())
+	branchName, err := git.FindBranchBySubstring(config.GetIssueKey() + config.Options.IssueBranchSeparator)
 	if err != nil {
 		printErrorToConsole(err)
 		return
@@ -95,9 +97,11 @@ func modifyBranch() {
 		return
 	}
 
-	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
-	if err != nil {
-		printErrorToConsole(err)
+	issueKeys := git.GetIssueKeysFromBranchName(currentBranchName)
+	if len(issueKeys) == 0 {
+		printErrorToConsole(fmt.Errorf(
+			"Branch name '%s' does not contain issue keys with prefix '%s'", currentBranchName, config.GetIssueKeyPrefix(),
+		))
 		return
 	}
 
@@ -116,7 +120,36 @@ func modifyBranch() {
 		return
 	}
 
-	output, err := git.UpdateBranchName(newBranchName)
+	output, err := git.UpdateCurrentBranchName(newBranchName)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	printInfoToConsole(string(output))
+}
+
+func linkJiraIssueToCurrentBranch() {
+	currentBranchName, err := git.GetCurrentBranchName()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKeys := git.GetIssueKeysFromBranchName(currentBranchName)
+	issueKey := config.GetIssueKey()
+	if stringInSlice(issueKey, issueKeys) {
+		printInfoToConsole(fmt.Sprintf("Jira issue %s already linked to the current branch", issueKey))
+		return
+	}
+
+	updatedBranchName, err := git.PrependIssueKeysToBranchName([]string{issueKey}, currentBranchName)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	output, err := git.UpdateCurrentBranchName(updatedBranchName)
 	if err != nil {
 		printErrorToConsole(err)
 		return
@@ -132,9 +165,11 @@ func printInfo() {
 		return
 	}
 
-	issueKeys, err := git.GetIssueKeysFromBranchName(currentBranchName)
-	if err != nil {
-		printErrorToConsole(err)
+	issueKeys := git.GetIssueKeysFromBranchName(currentBranchName)
+	if len(issueKeys) == 0 {
+		printErrorToConsole(fmt.Errorf(
+			"Branch name '%s' does not contain issue keys with prefix '%s'", currentBranchName, config.GetIssueKeyPrefix(),
+		))
 		return
 	}
 
@@ -164,4 +199,13 @@ func printJiraIssueData(issue jira.Issue) {
 	fmt.Println("Description:")
 	fmt.Println(issue.GetStrippedDescription())
 	fmt.Println("--------------------")
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }

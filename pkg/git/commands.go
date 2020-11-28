@@ -69,8 +69,8 @@ func CheckoutNewBranch(branchName string) ([]byte, error) {
 	return output, nil
 }
 
-// UpdateBranchName updates current branch name
-func UpdateBranchName(branchName string) ([]byte, error) {
+// UpdateCurrentBranchName updates current branch name
+func UpdateCurrentBranchName(branchName string) ([]byte, error) {
 	cmd := exec.Command("git", "branch", "-m", branchName)
 	output, err := cmd.Output()
 	if err != nil {
