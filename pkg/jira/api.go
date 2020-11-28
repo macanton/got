@@ -32,10 +32,10 @@ const (
 )
 
 // GetIssue tries to find issue by project code from configuration and by code
-func GetIssue() (Issue, error) {
+func GetIssue(issueKey string) (Issue, error) {
 	client := &http.Client{}
 
-	requestURL, err := getRequestURL(jiraOperationGetIssue, config.GetIssueKey())
+	requestURL, err := getRequestURL(jiraOperationGetIssue, issueKey)
 	if err != nil {
 		return Issue{}, err
 	}
@@ -58,8 +58,12 @@ func GetIssue() (Issue, error) {
 
 	var issue Issue
 	err = json.Unmarshal([]byte(bodyText), &issue)
-	if err != nil || issue.Key != config.GetIssueKey() {
-		return issue, fmt.Errorf("Jira ticket with key %s not found: %s", config.GetIssueKey(), err)
+	if err != nil {
+		return issue, fmt.Errorf("Failed to parse get Jira issue response body: %s", err.Error())
+	}
+
+	if issue.Key != issueKey {
+		return issue, fmt.Errorf("Jira ticket with key %s not found", issueKey)
 	}
 
 	return issue, nil
