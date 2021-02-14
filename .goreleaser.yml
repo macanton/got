@@ -18,7 +18,7 @@ brews:
   -
     name: got
     tap:
-      owner: repo-owner
+      owner: macanton
       name: homebrew-got
     description: CLI tool for manipulating git branches together with Jira tickets
     license: "MIT"
