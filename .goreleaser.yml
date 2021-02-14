@@ -18,8 +18,8 @@ brews:
   -
     name: got
     tap:
-    owner: repo-owner
-    name: homebrew-got
+      owner: repo-owner
+      name: homebrew-got
     description: CLI tool for manipulating git branches together with Jira tickets
     license: "MIT"
 checksum:
