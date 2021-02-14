@@ -16,7 +16,6 @@ archives:
       amd64: x86_64
 brews:
   -
-    name: got
     tap:
       owner: macanton
       name: homebrew-got
