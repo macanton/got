@@ -23,8 +23,6 @@ brews:
     description: CLI tool for manipulating git branches together with Jira tickets
 checksum:
   name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-next"
 changelog:
   sort: asc
   filters:
