@@ -26,6 +26,12 @@ Example of created branches:
 - Jira cloud api version 3 (https://YOUR_COMPANY_JIRA_DOMAIN.atlassian.net/rest/api/3)
 
 ## Installation
+### Home brew
+```
+brew tap macanton/got
+brew install got
+```
+
 ### From source code
 ```
 brew install go
