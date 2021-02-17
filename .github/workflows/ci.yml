@@ -1,4 +1,4 @@
-name: test
+name: ci
 
 on: [pull_request, push]
 
@@ -29,6 +29,6 @@ jobs:
         if: success() && startsWith(github.ref, 'refs/tags/')
         with:
           version: latest
-          args: release
+          args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
