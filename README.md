@@ -12,7 +12,6 @@ It helps to reduce the amount of time spent on creating/managing git branches th
 - `got -cj` - creates a new Jira issue and if it succeeds creates new git branch for it
 - `got -m` - modifies Jira issue summary and current branch name
 - `got -info` - prints current branch Jira issues info
-
 Example of created branches:
 `PC-1234/jira_issue_summary`, where:
 - `PC` - project code
