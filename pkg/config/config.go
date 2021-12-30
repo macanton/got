@@ -20,12 +20,14 @@ const (
 	PrintInfo                        OperationType = "PrintInfo"
 	LinkJiraIssueToCurrentBranch     OperationType = "LinkJiraIssueToCurrentBranch"
 	UnlinkJiraIssueFromCurrentBranch OperationType = "UnlinkJiraIssueFromCurrentBranch"
+	AddLabels 											 OperationType = "AddLabels"
 )
 
 // OptionsType is a type for stored app configuration
 type OptionsType struct {
 	IssueCode            int
 	Summary              string
+	Labels               []string
 	Operation            OperationType
 	IssueBranchSeparator string
 	Jira                 struct {
@@ -50,6 +52,7 @@ func InitAndRequestAdditionalData() error {
 
 	ticketID := flag.Int("b", 0, "Jira ticket number key for new branch")
 	modifyBranch := flag.Bool("m", false, "Update branch name with Jira issue summary")
+	addLabels := flag.Bool("al", false, "Add labels to jira issue")
 	createIssue := flag.Bool("cj", false, "Create a new Jira issue and switch to the new branch")
 	printIssuesInfo := flag.Bool("info", false, "Print current branch Jira issues information")
 	issueCodeForLinking := flag.Int("lj", 0, "Links Jira Issue to current branch")
@@ -90,6 +93,12 @@ func InitAndRequestAdditionalData() error {
 		return err
 	}
 
+	if *addLabels {
+		Options.Operation = AddLabels
+		err := readLabels()
+		return err
+	}
+
 	if *printIssuesInfo {
 		Options.Operation = PrintInfo
 		return nil
@@ -106,6 +115,25 @@ func GetIssueKey() string {
 // GetIssueKeyPrefix returns Jira issue key prefix
 func GetIssueKeyPrefix() string {
 	return fmt.Sprintf("%s-", Options.Jira.ProjectCode)
+}
+
+func readLabels() error {
+	fmt.Print("Enter Jira issue labels that you want to set: ")
+
+	reader := bufio.NewReader(os.Stdin)
+	labels, err := reader.ReadString('\n')
+	if err != nil {
+		return fmt.Errorf("Failed to read string from buffer reader: %s", err.Error())
+	}
+
+	labels = strings.TrimSpace(labels)
+	if len(labels) == 0 {
+		return errors.New("Labels list cannot be an empty string")
+	}
+
+	Options.Labels = strings.Split(labels, " ")
+
+	return nil
 }
 
 func readJiraIssueSummary() error {

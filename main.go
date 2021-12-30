@@ -5,6 +5,7 @@ import (
 	"got/pkg/config"
 	"got/pkg/git"
 	"got/pkg/jira"
+	"strings"
 )
 
 func main() {
@@ -27,6 +28,8 @@ func main() {
 		linkJiraIssueToCurrentBranch()
 	case config.UnlinkJiraIssueFromCurrentBranch:
 		unlinkJiraIssueFromCurrentBranch()
+	case config.AddLabels:
+		addLabels()
 	}
 }
 
@@ -90,6 +93,31 @@ func createJiraTicketAndCheckBranch() {
 	}
 
 	printInfoToConsole(string(output))
+}
+
+func addLabels() {
+	currentBranchName, err := git.GetCurrentBranchName()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKeys := git.GetIssueKeysFromBranchName(currentBranchName)
+	if len(issueKeys) == 0 {
+		printErrorToConsole(fmt.Errorf(
+			"Branch name '%s' does not contain issue keys with prefix '%s'", currentBranchName, config.GetIssueKeyPrefix(),
+		))
+		return
+	}
+
+	issueKey := issueKeys[0]
+	newLabels, err := jira.AddIssueLabels(issueKey, config.Options.Labels)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	printInfoToConsole(fmt.Sprintf("Jira issue lables updated to '%s'", strings.Join(newLabels, ", ")))
 }
 
 func modifyBranch() {

@@ -52,7 +52,12 @@ type UpdateIssueData struct {
 
 // UpdateIssueDataFields is a type for issue update data fields
 type UpdateIssueDataFields struct {
-	Summary []UpdateIssueSummaryFieldOperationData `json:"summary"`
+	Summary []UpdateIssueSummaryFieldOperationData `json:"summary,omitempty"`
+	Labels []UpdateIssueLabels `json:"labels,omitempty"`
+}
+
+type UpdateIssueLabels struct {
+	Add string `json:"add"`
 }
 
 // UpdateIssueSummaryFieldOperationData is a type for issue summary set operation
