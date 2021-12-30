@@ -59,3 +59,22 @@ func TestPrependIssueKeysToBranchName_WithJiraIssueKeys(t *testing.T) {
 		)
 	}
 }
+
+func TestRemoveIssueKeysFromBranchName_WithoutJiraIssueKeys(t *testing.T) {
+
+}
+
+func TestRemoveIssueKeysFromBranchName_WithJiraIssueKeys(t *testing.T) {
+
+}
+
+func TestRemoveIssueKeysFromBranchName_WithFirstJiraIssueKey(t *testing.T) {
+
+}
+func TestRemoveIssueKeysFromBranchName_WithLastJiraIssueKey(t *testing.T) {
+
+}
+
+func TestRemoveIssueKeysFromBranchName_WithDuplicateJiraIssueKey(t *testing.T) {
+
+}
