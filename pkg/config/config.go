@@ -20,7 +20,7 @@ const (
 	PrintInfo                        OperationType = "PrintInfo"
 	LinkJiraIssueToCurrentBranch     OperationType = "LinkJiraIssueToCurrentBranch"
 	UnlinkJiraIssueFromCurrentBranch OperationType = "UnlinkJiraIssueFromCurrentBranch"
-	AddLabels 											 OperationType = "AddLabels"
+	AddLabels                        OperationType = "AddLabels"
 )
 
 // OptionsType is a type for stored app configuration
@@ -118,7 +118,7 @@ func GetIssueKeyPrefix() string {
 }
 
 func readLabels() error {
-	fmt.Print("Enter Jira issue labels that you want to set: ")
+	fmt.Print("Enter Jira issue labels to add separated by space: ")
 
 	reader := bufio.NewReader(os.Stdin)
 	labels, err := reader.ReadString('\n')

@@ -6,6 +6,7 @@ import (
 	"got/pkg/git"
 	"got/pkg/jira"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -34,6 +35,10 @@ func main() {
 }
 
 func checkoutJiraBranch() {
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(1)
+	go addRepoLabelToJiraIssue(&waitGroup, config.GetIssueKey())
+
 	issue, err := jira.GetIssue(config.GetIssueKey())
 	if err != nil {
 		printErrorToConsole(err)
@@ -69,6 +74,7 @@ func checkoutJiraBranch() {
 		return
 	}
 
+	waitGroup.Wait()
 	printInfoToConsole(string(output))
 	printJiraIssueData(issue)
 }
@@ -231,6 +237,25 @@ func printInfo() {
 		}
 		printJiraIssueData(issue)
 	}
+}
+
+func addRepoLabelToJiraIssue(waitGroup *sync.WaitGroup, issueKey string) {
+	defer waitGroup.Done()
+
+	repoName, err := git.GetRepositoryName()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	repoNameLabel := fmt.Sprintf("repo-%s", repoName)
+	newLabels, err := jira.AddIssueLabels(issueKey, []string{repoNameLabel})
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	printInfoToConsole(fmt.Sprintf("Added labels to the Jira issue: '%s'", strings.Join(newLabels, ", ")))
 }
 
 func printInfoToConsole(data string) {

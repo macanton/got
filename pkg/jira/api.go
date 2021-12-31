@@ -147,7 +147,6 @@ func AddIssueLabels(issueKey string, labels []string) ([]string, error) {
 	if err != nil {
 		return labels, fmt.Errorf("Failed to convert form values to json. Error: '%s'", err)
 	}
-	fmt.Println(string(formValuesByte))
 
 	setJiraRequestHeaders(req)
 	resp, err := client.Do(req)
