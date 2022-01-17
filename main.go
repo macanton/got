@@ -35,10 +35,6 @@ func main() {
 }
 
 func checkoutJiraBranch() {
-	var waitGroup sync.WaitGroup
-	waitGroup.Add(1)
-	go addRepoLabelToJiraIssue(&waitGroup, config.GetIssueKey())
-
 	issue, err := jira.GetIssue(config.GetIssueKey())
 	if err != nil {
 		printErrorToConsole(err)
@@ -61,6 +57,10 @@ func checkoutJiraBranch() {
 		printInfoToConsole(string(output))
 		return
 	}
+
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(1)
+	go addRepoLabelToJiraIssue(&waitGroup, config.GetIssueKey())
 
 	branchName, err = git.GenerateBranchName([]string{issue.Key}, issue.Fields.Summary)
 	if err != nil {
