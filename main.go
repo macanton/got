@@ -86,6 +86,10 @@ func createJiraTicketAndCheckBranch() {
 		return
 	}
 
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(1)
+	go addRepoLabelToJiraIssue(&waitGroup, issueKey)
+
 	branchName, err := git.GenerateBranchName([]string{issueKey}, config.Options.Summary)
 	if err != nil {
 		printErrorToConsole(err)
@@ -98,6 +102,7 @@ func createJiraTicketAndCheckBranch() {
 		return
 	}
 
+	waitGroup.Wait()
 	printInfoToConsole(string(output))
 }
 
