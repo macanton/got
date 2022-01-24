@@ -27,9 +27,14 @@ Example of created branches:
 
 ## Installation
 ### Home brew
+#### Installation
 ```
 brew tap macanton/got
 brew install got
+```
+#### Upgrade
+```
+brew upgrade macanton/got/got
 ```
 
 ### From source code
