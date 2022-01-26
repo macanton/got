@@ -128,7 +128,7 @@ func addLabels() {
 		return
 	}
 
-	printInfoToConsole(fmt.Sprintf("Jira issue lables updated to '%s'", strings.Join(newLabels, ", ")))
+	printInfoToConsole(fmt.Sprintf("Jira issue labels updated to '%s'", strings.Join(newLabels, ", ")))
 }
 
 func modifyBranch() {
