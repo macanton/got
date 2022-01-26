@@ -120,6 +120,47 @@ func CreateIssue(summary string) (string, error) {
 	return response.Key, nil
 }
 
+// AddIssueLabels updates Jira issue summary
+func AddIssueLabels(issueKey string, labels []string) ([]string, error) {
+	client := &http.Client{}
+
+	requestURL, err := getRequestURL(jiraOperationUpdateIssue, issueKey)
+	if err != nil {
+		return labels, err
+	}
+
+	var updateIssueLabels []UpdateIssueLabels
+	for _, label := range labels {
+		updateIssueLabels = append(updateIssueLabels, UpdateIssueLabels{Add: label}) // note the = instead of :=
+	}
+	formValues := UpdateIssueData{
+		Update: UpdateIssueDataFields{
+			Labels: updateIssueLabels,
+		},
+	}
+	formValuesByte, err := json.Marshal(formValues)
+	if err != nil {
+		return labels, err
+	}
+
+	req, err := http.NewRequest("PUT", requestURL, bytes.NewReader(formValuesByte))
+	if err != nil {
+		return labels, fmt.Errorf("Failed to convert form values to json. Error: '%s'", err)
+	}
+
+	setJiraRequestHeaders(req)
+	resp, err := client.Do(req)
+	if err != nil {
+		return labels, err
+	}
+
+	if resp.StatusCode != 204 {
+		return labels, fmt.Errorf("Failed to update Jira ticket. Status code: %d", resp.StatusCode)
+	}
+
+	return labels, nil
+}
+
 // UpdateIssueSummary updates Jira issue summary
 func UpdateIssueSummary(issueKey string, summary string) (string, error) {
 	client := &http.Client{}

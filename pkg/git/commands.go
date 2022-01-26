@@ -6,6 +6,22 @@ import (
 	"strings"
 )
 
+// Returns name of repo from branch origin url
+func GetRepositoryName() (string, error) {
+	cmd := exec.Command("git", "config", "--get", "remote.origin.url")
+	output, err := cmd.Output()
+	if err != nil {
+		return string(output), fmt.Errorf(
+			fmt.Sprintf("Failed get current git orgin url with error: '%s'", err.Error()),
+		)
+	}
+
+	repoName := strings.Split(string(output), ".git")[0]
+	tempRepoName := strings.Split(repoName, "/")
+
+	return 	tempRepoName[len(tempRepoName)-1], nil
+}
+
 // FindBranchBySubstring finds branch
 func FindBranchBySubstring(substring string) (string, error) {
 	listAllBranchesCmd := exec.Command("git", "branch", "-a")

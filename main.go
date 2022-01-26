@@ -5,6 +5,8 @@ import (
 	"got/pkg/config"
 	"got/pkg/git"
 	"got/pkg/jira"
+	"strings"
+	"sync"
 )
 
 func main() {
@@ -27,6 +29,8 @@ func main() {
 		linkJiraIssueToCurrentBranch()
 	case config.UnlinkJiraIssueFromCurrentBranch:
 		unlinkJiraIssueFromCurrentBranch()
+	case config.AddLabels:
+		addLabels()
 	}
 }
 
@@ -54,6 +58,10 @@ func checkoutJiraBranch() {
 		return
 	}
 
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(1)
+	go addRepoLabelToJiraIssue(&waitGroup, config.GetIssueKey())
+
 	branchName, err = git.GenerateBranchName([]string{issue.Key}, issue.Fields.Summary)
 	if err != nil {
 		printErrorToConsole(err)
@@ -66,6 +74,7 @@ func checkoutJiraBranch() {
 		return
 	}
 
+	waitGroup.Wait()
 	printInfoToConsole(string(output))
 	printJiraIssueData(issue)
 }
@@ -76,6 +85,10 @@ func createJiraTicketAndCheckBranch() {
 		printErrorToConsole(err)
 		return
 	}
+
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(1)
+	go addRepoLabelToJiraIssue(&waitGroup, issueKey)
 
 	branchName, err := git.GenerateBranchName([]string{issueKey}, config.Options.Summary)
 	if err != nil {
@@ -89,7 +102,33 @@ func createJiraTicketAndCheckBranch() {
 		return
 	}
 
+	waitGroup.Wait()
 	printInfoToConsole(string(output))
+}
+
+func addLabels() {
+	currentBranchName, err := git.GetCurrentBranchName()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	issueKeys := git.GetIssueKeysFromBranchName(currentBranchName)
+	if len(issueKeys) == 0 {
+		printErrorToConsole(fmt.Errorf(
+			"Branch name '%s' does not contain issue keys with prefix '%s'", currentBranchName, config.GetIssueKeyPrefix(),
+		))
+		return
+	}
+
+	issueKey := issueKeys[0]
+	newLabels, err := jira.AddIssueLabels(issueKey, config.Options.Labels)
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	printInfoToConsole(fmt.Sprintf("Jira issue labels updated to '%s'", strings.Join(newLabels, ", ")))
 }
 
 func modifyBranch() {
@@ -203,6 +242,25 @@ func printInfo() {
 		}
 		printJiraIssueData(issue)
 	}
+}
+
+func addRepoLabelToJiraIssue(waitGroup *sync.WaitGroup, issueKey string) {
+	defer waitGroup.Done()
+
+	repoName, err := git.GetRepositoryName()
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	repoNameLabel := fmt.Sprintf("repo-%s", repoName)
+	newLabels, err := jira.AddIssueLabels(issueKey, []string{repoNameLabel})
+	if err != nil {
+		printErrorToConsole(err)
+		return
+	}
+
+	printInfoToConsole(fmt.Sprintf("Added labels to the Jira issue: '%s'", strings.Join(newLabels, ", ")))
 }
 
 func printInfoToConsole(data string) {
