@@ -30,7 +30,7 @@ Example of created branches:
 #### Installation
 ```
 brew tap macanton/got
-brew install got
+brew install macanton/got/got # there is another package 'got' exists. That is why we need to use full path
 ```
 #### Upgrade
 ```
